@@ -9,6 +9,6 @@ services:
     #   - context: .
     working_dir: /notebooks
     ports:
-      - "8888:8888"
+      - "8989:8888"
     volumes:
-      - ./notebooks/:/notebooks
+      - ./notebooks/:/opt/notebook
