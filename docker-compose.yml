@@ -1,0 +1,14 @@
+
+version: '2'
+
+services:
+  jupyter:
+    container_name: jupyter-nb
+    image: petronetto/alpine-machine-learning
+    # build:
+    #   - context: .
+    working_dir: /notebooks
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks/:/notebooks
