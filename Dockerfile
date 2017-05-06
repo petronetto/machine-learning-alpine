@@ -63,8 +63,7 @@ RUN XGBOOST_URL="https://github.com/dmlc/xgboost/archive/0.47.zip" && \
     unzip $XGBOOST_FILE && rm $XGBOOST_FILE && cd $XGBOOST_PATH && \
     make && \
     cd python-package && \
-    $CONDA_DIR/bin/python setup.py install && \
-    apk del build-dependencies
+    $CONDA_DIR/bin/python setup.py install
 
 # Install Jupyter notebook
 # Create nbuser user with UID=1000 and in the 'users' group
