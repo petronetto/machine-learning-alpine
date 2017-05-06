@@ -45,6 +45,15 @@ RUN echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/ap
 	&& find /usr/lib/python3.5/ -type d -name test -depth -exec rm -rf {} \; \
 	&& find /usr/lib/python3.5/ -name __pycache__ -depth -exec rm -rf {} \;
 
+# Create nbuser user with UID=1000 and in the 'users' group
+# Grant ownership over the conda dir and home dir, but stick the group as root.
+RUN adduser -s /bin/bash -u 1000 -D nbuser && \
+    mkdir /home/nbuser/work \
+    && mkdir /home/nbuser/.jupyter \
+    && mkdir /home/nbuser/.local \
+
+USER nbuser
+
 EXPOSE 8888
 WORKDIR /opt/notebook
 ENTRYPOINT ["/sbin/tini", "--"]
