@@ -47,14 +47,15 @@ RUN echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/ap
 
 # Create nbuser user with UID=1000 and in the 'users' group
 # Grant ownership over the conda dir and home dir, but stick the group as root.
-RUN adduser -s /bin/bash -u 1000 -D nbuser && \
-    mkdir /home/nbuser/work \
+RUN adduser -G users -u 1000 -s /bin/sh -D nbuser \
+    && echo "nbuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
+    && mkdir /home/nbuser/notebooks \
     && mkdir /home/nbuser/.jupyter \
     && mkdir /home/nbuser/.local \
 
 USER nbuser
 
 EXPOSE 8888
-WORKDIR /opt/notebook
+WORKDIR /home/nbuser/notebooks
 ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["jupyter", "notebook", "--port=8888", "--no-browser", "--ip=0.0.0.0"]
