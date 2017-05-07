@@ -52,10 +52,17 @@ RUN adduser -G users -u 1000 -s /bin/sh -D nbuser \
     && mkdir /home/nbuser/notebooks \
     && mkdir /home/nbuser/.jupyter \
     && mkdir /home/nbuser/.local \
+    && chown -R nbuser:users /home/nbuser
+
+# Start file
+COPY start.sh /start.sh
+RUN chmod a+x /start.sh
+
+EXPOSE 8888
+
+WORKDIR /home/nbuser/notebooks
 
 USER nbuser
 
-EXPOSE 8888
-WORKDIR /home/nbuser/notebooks
 ENTRYPOINT ["/sbin/tini", "--"]
-CMD ["jupyter", "notebook", "--port=8888", "--no-browser", "--ip=0.0.0.0"]
+CMD ["/start.sh"]
