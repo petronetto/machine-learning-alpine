@@ -8,7 +8,7 @@ RUN apk add --no-cache python3 && \
     rm -r /usr/lib/python*/ensurepip && \
     pip3 --no-cache-dir install --upgrade pip setuptools
 
-# Installing numpy, pandas, scipy and scikit-learn
+# Installing numpy, pandas, scipy, scikit-learn and jupyter
 RUN apk add --no-cache tini libstdc++ && \
     apk add --no-cache \
         --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
@@ -22,10 +22,8 @@ RUN apk add --no-cache tini libstdc++ && \
     pip --no-cache-dir install numpy && \
     pip --no-cache-dir install pandas && \
     pip --no-cache-dir install scipy && \
-    pip --no-cache-dir install scikit-learn
-
-# Install jupyter notebook
-RUN pip install jupyter
+    pip --no-cache-dir install scikit-learn && \
+    pip --no-cache-dir install jupyter
 
 # Cleaning
 RUN pip uninstall --yes cython && \
