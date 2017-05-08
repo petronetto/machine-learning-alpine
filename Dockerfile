@@ -6,7 +6,7 @@ MAINTAINER Juliano Petronetto <juliano.petronetto@gmail.com>
 RUN apk add --no-cache python3 && \
     python3 -m ensurepip && \
     rm -r /usr/lib/python*/ensurepip && \
-    pip3 install --upgrade pip setuptools
+    pip3 --no-cache-dir install --upgrade pip setuptools
 
 # Installing numpy, pandas, scipy and scikit-learn
 RUN apk add --no-cache tini libstdc++ && \
@@ -18,21 +18,20 @@ RUN apk add --no-cache tini libstdc++ && \
         g++ gcc gfortran musl-dev \
         python3-dev && \
     ln -s locale.h /usr/include/xlocale.h && \
-    pip install cython && \
-    pip install numpy && \
-    pip install pandas && \
-    pip install scipy && \
-    pip install scikit-learn
+    pip --no-cache-dir install cython && \
+    pip --no-cache-dir install numpy && \
+    pip --no-cache-dir install pandas && \
+    pip --no-cache-dir install scipy && \
+    pip --no-cache-dir install scikit-learn
 
 # Install jupyter notebook
-RUN pip3 install jupyter \
-   && pip3 install ipywidgets \
-   && jupyter nbextension enable --py widgetsnbextension
+RUN pip install jupyter
 
 # Cleaning
 RUN pip uninstall --yes cython && \
     rm /usr/include/xlocale.h && \
-    rm -r /root/.cache && \
+    rm -rf /root/.cache && \
+    rm -rf /var/cache/apk/* && \
     apk del .build-dependencies
 
 # Create nbuser user with UID=1000 and in the 'users' group
@@ -45,7 +44,7 @@ RUN adduser -G users -u 1000 -s /bin/sh -D nbuser \
     && chown -R nbuser:users /home/nbuser
 
 # Run notebook without token
-RUN echo "c.NotebookApp.token = u''" >> ~/.jupyter/jupyter_notebook_config.py
+RUN echo "c.NotebookApp.token = u''" >> /home/nbuser/.jupyter/jupyter_notebook_config.py
 
 # Start file
 COPY start.sh /start.sh
