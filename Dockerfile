@@ -8,14 +8,14 @@ RUN apk add --no-cache python3 && \
     rm -r /usr/lib/python*/ensurepip && \
     pip3 --no-cache-dir install --upgrade pip setuptools
 
-# Installing numpy, pandas, scipy, scikit-learn and jupyter
-RUN apk add --no-cache tini libstdc++ && \
+# Installing numpy, pandas, scipy, xgboost, scikit-learn and jupyter
+RUN apk add --no-cache tini libstdc++ gcc && \
     apk add --no-cache \
         --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
         lapack-dev && \
     apk add --no-cache \
         --virtual=.build-dependencies \
-        g++ gcc gfortran musl-dev \
+        g++ gfortran musl-dev make \
         python3-dev && \
     ln -s locale.h /usr/include/xlocale.h && \
     pip --no-cache-dir install cython && \
@@ -23,6 +23,7 @@ RUN apk add --no-cache tini libstdc++ && \
     pip --no-cache-dir install pandas && \
     pip --no-cache-dir install scipy && \
     pip --no-cache-dir install scikit-learn && \
+    pip --no-cache-dir install xgboost && \
     pip --no-cache-dir install jupyter
 
 # Cleaning
