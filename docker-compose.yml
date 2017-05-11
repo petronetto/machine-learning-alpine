@@ -2,10 +2,8 @@ version: '2'
 
 services:
   jupyter:
-    container_name: jupyter-nb
+    container_name: notebook
     image: petronetto/machine-learning-alpine
-    # build:
-    #   context: .
     ports:
       - "8888:8888"
     volumes:

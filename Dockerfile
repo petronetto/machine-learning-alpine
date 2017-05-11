@@ -8,23 +8,28 @@ RUN apk add --no-cache python3 && \
     rm -r /usr/lib/python*/ensurepip && \
     pip3 --no-cache-dir install --upgrade pip setuptools
 
-# Installing numpy, pandas, scipy, xgboost, scikit-learn and jupyter
-RUN apk add --no-cache tini libstdc++ gcc && \
+RUN apk add --no-cache tini libstdc++ gcc freetype libpng && \
     apk add --no-cache \
         --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
         lapack-dev && \
     apk add --no-cache \
         --virtual=.build-dependencies \
-        g++ gfortran musl-dev make \
-        python3-dev && \
-    ln -s locale.h /usr/include/xlocale.h && \
-    pip --no-cache-dir install cython && \
-    pip --no-cache-dir install numpy && \
-    pip --no-cache-dir install pandas && \
-    pip --no-cache-dir install scipy && \
-    pip --no-cache-dir install scikit-learn && \
-    pip --no-cache-dir install xgboost && \
-    pip --no-cache-dir install jupyter
+        g++ gfortran musl-dev pkgconfig freetype-dev libpng-dev make \
+        python3-dev libc-dev && \
+    ln -s locale.h /usr/include/xlocale.h
+
+# Python packages
+RUN pip --no-cache-dir install -U 'pip' \
+    'cython' \
+    'numpy' \
+    'scipy' \
+    'pandas==0.17' \
+    'scikit-learn==0.17' \
+    'matplotlib==1.5' \
+    'graphviz' \
+    'seaborn==0.7' \
+    'xgboost' \
+    'jupyter'
 
 # Cleaning
 RUN pip uninstall --yes cython && \
@@ -34,13 +39,12 @@ RUN pip uninstall --yes cython && \
     apk del .build-dependencies
 
 # Create nbuser user with UID=1000 and in the 'users' group
-# Grant ownership over the conda dir and home dir, but stick the group as root.
 RUN adduser -G users -u 1000 -s /bin/sh -D nbuser \
-    && echo "nbuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
-    && mkdir /home/nbuser/notebooks \
-    && mkdir /home/nbuser/.jupyter \
-    && mkdir /home/nbuser/.local \
-    && chown -R nbuser:users /home/nbuser
+    echo "nbuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
+    mkdir /home/nbuser/notebooks && \
+    mkdir /home/nbuser/.jupyter && \
+    mkdir /home/nbuser/.local && \
+    chown -R nbuser:users /home/nbuser
 
 # Run notebook without token
 RUN echo "c.NotebookApp.token = u''" >> /home/nbuser/.jupyter/jupyter_notebook_config.py
