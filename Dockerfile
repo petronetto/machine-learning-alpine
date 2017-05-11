@@ -2,6 +2,8 @@ FROM alpine:3.5
 
 MAINTAINER Juliano Petronetto <juliano.petronetto@gmail.com>
 
+# RUN echo @testing http://dl-cdn.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories
+
 # Setup de basic requeriments
 RUN apk add --no-cache python3 && \
     python3 -m ensurepip && \
@@ -19,17 +21,17 @@ RUN apk add --no-cache tini libstdc++ gcc freetype libpng && \
     ln -s locale.h /usr/include/xlocale.h
 
 # Python packages
-RUN pip --no-cache-dir install -U 'pip' \
-    'cython' \
-    'numpy' \
-    'scipy' \
-    'pandas==0.17' \
-    'scikit-learn==0.17' \
-    'matplotlib==1.5' \
-    'graphviz' \
-    'seaborn==0.7' \
-    'xgboost' \
-    'jupyter'
+RUN pip --no-cache-dir install -U 'pip'
+RUN pip --no-cache-dir install 'cython'
+RUN pip --no-cache-dir install 'numpy'
+RUN pip --no-cache-dir install 'scipy'
+RUN pip --no-cache-dir install 'pandas==0.17'
+RUN pip --no-cache-dir install 'scikit-learn==0.17'
+RUN pip --no-cache-dir install 'matplotlib==1.5'
+RUN pip --no-cache-dir install 'graphviz'
+RUN pip --no-cache-dir install 'seaborn==0.7'
+RUN pip --no-cache-dir install 'xgboost'
+RUN pip --no-cache-dir install 'jupyter'
 
 # Cleaning
 RUN pip uninstall --yes cython && \
@@ -39,7 +41,7 @@ RUN pip uninstall --yes cython && \
     apk del .build-dependencies
 
 # Create nbuser user with UID=1000 and in the 'users' group
-RUN adduser -G users -u 1000 -s /bin/sh -D nbuser \
+RUN adduser -G users -u 1000 -s /bin/sh -D nbuser && \
     echo "nbuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
     mkdir /home/nbuser/notebooks && \
     mkdir /home/nbuser/.jupyter && \
