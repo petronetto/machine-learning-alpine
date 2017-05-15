@@ -21,14 +21,14 @@ RUN apk add --no-cache tini libstdc++ gcc freetype zlib jpeg libpng graphviz && 
     ln -s locale.h /usr/include/xlocale.h
 
 # Python packages
-RUN pip --no-cache-dir install -U 'pip' 
+RUN pip --no-cache-dir install -U 'pip' \
     'cython' && \
     'numpy' && \
     'scipy' && \
-    'pandas==0.17' && \
-    'scikit-learn==0.17' && \
-    'matplotlib==1.5' && \
-    'seaborn==0.7' && \
+    'pandas' && \
+    'scikit-learn' && \
+    'matplotlib' && \
+    'seaborn' && \
     'xgboost' && \
     'jupyter'
 
