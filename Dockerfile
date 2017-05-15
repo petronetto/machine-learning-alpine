@@ -2,14 +2,13 @@ FROM alpine:3.5
 
 MAINTAINER Juliano Petronetto <juliano.petronetto@gmail.com>
 
-# RUN echo @testing http://dl-cdn.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories
-
 # Setup de basic requeriments
 RUN apk add --no-cache python3 && \
     python3 -m ensurepip && \
     rm -r /usr/lib/python*/ensurepip && \
     pip3 --no-cache-dir install --upgrade pip setuptools
 
+# Dev dependencies and others stuffs...
 RUN apk add --no-cache tini libstdc++ gcc freetype zlib jpeg libpng graphviz && \
     apk add --no-cache \
         --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
@@ -25,10 +24,10 @@ RUN pip --no-cache-dir install -U 'pip'
 RUN pip --no-cache-dir install 'cython'
 RUN pip --no-cache-dir install 'numpy'
 RUN pip --no-cache-dir install 'scipy'
-RUN pip --no-cache-dir install 'pandas==0.17'
-RUN pip --no-cache-dir install 'scikit-learn==0.17.1'
-RUN pip --no-cache-dir install 'matplotlib==1.5'
-RUN pip --no-cache-dir install 'seaborn==0.7'
+RUN pip --no-cache-dir install 'pandas'
+RUN pip --no-cache-dir install 'scikit-learn'
+RUN pip --no-cache-dir install 'matplotlib'
+RUN pip --no-cache-dir install 'seaborn'
 RUN pip --no-cache-dir install 'xgboost'
 RUN pip --no-cache-dir install 'jupyter'
 
@@ -61,4 +60,4 @@ WORKDIR /home/nbuser/notebooks
 USER nbuser
 
 ENTRYPOINT ["/sbin/tini", "--"]
-CMD ["/start.sh"]
+CMD ["jupyter", "notebook", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--NotebookApp.token="]
