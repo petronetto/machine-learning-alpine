@@ -15,7 +15,11 @@
 All in only ~200 MB :)
 
 ## Running the container
-Run `docker-composer up` and open your browser in `http://localhost:8888`.
+Clone this reposity: `git clone git@github.com:Petronetto/machine-learning-alpine.git`.
+
+Go to the folder: `cd machine-learning-alpine`
+
+Run: `docker-composer up` and open your browser in `http://localhost:8888`.
 
 See the `Welcome.ipynb` to all versions.
 
