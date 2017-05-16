@@ -15,7 +15,7 @@
 All in only ~200 MB :)
 
 ## Running the container
-Run `docker-composer up` and open your browser in `http:localhost:8888`.
+Run `docker-composer up` and open your browser in `http://localhost:8888`.
 
 See the `Welcome.ipynb` to all versions.
 
