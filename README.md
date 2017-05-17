@@ -1,6 +1,9 @@
 # Alpine Container for Machine Learning
 
 [![](https://images.microbadger.com/badges/image/petronetto/machine-learning-alpine.svg)](https://microbadger.com/images/petronetto/machine-learning-alpine "Get your own image badge on microbadger.com")
+[![GitHub issues](https://img.shields.io/github/issues/Petronetto/machine-learning-alpine.svg)](https://github.com/Petronetto/machine-learning-alpine/issues)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/Petronetto/machine-learning-alpine/master/License.txt)
+[![Twitter](https://img.shields.io/twitter/url/https/github.com/Petronetto/machine-learning-alpine.svg?style=social)](https://twitter.com/intent/tweet?text=Wow:&url=%5Bobject%20Object%5D)
 
 ## What is include
 - Python 3.5
