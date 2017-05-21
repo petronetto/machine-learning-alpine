@@ -22,14 +22,17 @@ All in only ~200 MB :)
 
 
 ## Running the container
-Clone this repository: `git clone git@github.com:Petronetto/machine-learning-alpine.git`
+- Clone this repository: `git clone git@github.com:Petronetto/machine-learning-alpine.git`
 
-Enter in project folder: `cd machine-learning-alpine`
+- Enter in project folder: `cd machine-learning-alpine`
 
-Run: `docker-composer up` and open your browser in `http://localhost:8888`
+- Run: `docker-composer up` and open your browser in `http://localhost:8888`
 
 See the `Welcome.ipynb` to see the package versions.
 
+### Enabling Warning Messages
+By default the Warning Messages are disabled, if you want to enable, simply umcomment 
+the `environment` section in `docker-compose.yml` file.
 
 Enjoy :)
 

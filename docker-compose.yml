@@ -25,8 +25,11 @@ version: '2'
 services:
   jupyter:
     container_name: notebook
-    image: petronetto/machine-learning-alpine
+    image: petronetto/machine-learning-alpine:develop
     ports:
       - "8888:8888"
+    # Uncomment the lines below if you want to enable warning messages
+    # environment:
+    #   WARNINGS: "enable"
     volumes:
       - ./notebooks/:/home/nbuser/notebooks
