@@ -67,13 +67,14 @@ RUN adduser -G users -u 1000 -s /bin/sh -D nbuser && \
     mkdir /home/nbuser/.jupyter && \
     mkdir /home/nbuser/.local && \
     mkdir -p /home/nbuser/.ipython/profile_default/startup/ && \
-    chown -R nbuser:users /home/nbuser
+    chown -Rf nbuser:users /home/nbuser
 
 # Run notebook without token
 RUN echo "c.NotebookApp.token = u''" >> /home/nbuser/.jupyter/jupyter_notebook_config.py
 
-# disabling warnings
-COPY config.py /home/nbuser/.ipython/profile_default/startup/disable-warnings.py
+# Copy the file to start the container
+COPY start.sh /start.sh
+RUN chmod a+x /start.sh
 
 EXPOSE 8888
 
@@ -82,4 +83,5 @@ WORKDIR /home/nbuser/notebooks
 USER nbuser
 
 ENTRYPOINT ["/sbin/tini", "--"]
-CMD ["jupyter", "notebook", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--NotebookApp.token="]
+
+CMD ["/start.sh"]
