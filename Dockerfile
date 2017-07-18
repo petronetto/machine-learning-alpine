@@ -24,6 +24,15 @@ FROM alpine:3.5
 
 MAINTAINER Juliano Petronetto <juliano.petronetto@gmail.com>
 
+RUN echo "http://dl-2.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories; \
+    echo "http://dl-3.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories; \
+    echo "http://dl-4.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories; \
+    echo "http://dl-5.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
+
+# install ca-certificates so that HTTPS works consistently
+# the other runtime dependencies for Python are installed later
+RUN apk add --no-cache ca-certificates
+
 # Setup de basic requeriments
 RUN apk add --no-cache python3 && \
     python3 -m ensurepip && \
@@ -42,7 +51,7 @@ RUN apk add --no-cache tini libstdc++ gcc freetype zlib jpeg libpng graphviz && 
     ln -s locale.h /usr/include/xlocale.h
 
 # Python packages
-RUN pip --no-cache-dir install -U 'pip' 
+RUN pip --no-cache-dir install -U 'pip'
 RUN pip --no-cache-dir install 'cython'
 RUN pip --no-cache-dir install 'numpy'
 RUN pip --no-cache-dir install 'scipy'
