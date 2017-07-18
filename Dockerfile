@@ -48,7 +48,9 @@ RUN apk add --no-cache tini libstdc++ gcc freetype zlib jpeg libpng graphviz && 
         --virtual=.build-dependencies \
         g++ gfortran musl-dev pkgconfig freetype-dev jpeg-dev zlib-dev libpng-dev make \
         python3-dev libc-dev && \
-    ln -s locale.h /usr/include/xlocale.h
+    ln -s locale.h /usr/include/xlocale.h \
+
+RUN ln -s /usr/bin/python3 /usr/bin/python
 
 # Python packages
 RUN pip --no-cache-dir install -U 'pip'
