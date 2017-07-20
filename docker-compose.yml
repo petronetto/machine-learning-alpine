@@ -25,7 +25,7 @@ version: '2'
 services:
   jupyter:
     container_name: notebook
-    image: petronetto/machine-learning-alpine:develop
+    image: petronetto/machine-learning-alpine
     ports:
       - "8888:8888"
     # Uncomment the lines below if you want to enable warning messages

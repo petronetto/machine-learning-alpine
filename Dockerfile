@@ -18,58 +18,9 @@
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
+# SOFTWARE
 
-FROM alpine:3.5
-
-MAINTAINER Juliano Petronetto <juliano.petronetto@gmail.com>
-
-RUN echo "http://dl-2.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories; \
-    echo "http://dl-3.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories; \
-    echo "http://dl-4.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories; \
-    echo "http://dl-5.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
-
-# install ca-certificates so that HTTPS works consistently
-# the other runtime dependencies for Python are installed later
-RUN apk add --no-cache ca-certificates
-
-# Setup de basic requeriments
-RUN apk add --no-cache python3 && \
-    python3 -m ensurepip && \
-    rm -r /usr/lib/python*/ensurepip && \
-    pip3 --no-cache-dir install --upgrade pip setuptools
-
-# Dev dependencies and others stuffs...
-RUN apk add --no-cache tini libstdc++ gcc freetype zlib jpeg libpng graphviz && \
-    apk add --no-cache \
-        --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
-        lapack-dev && \
-    apk add --no-cache \
-        --virtual=.build-dependencies \
-        g++ gfortran musl-dev pkgconfig freetype-dev jpeg-dev zlib-dev libpng-dev make \
-        python3-dev libc-dev && \
-    ln -s locale.h /usr/include/xlocale.h \
-
-RUN ln -s /usr/bin/python3 /usr/bin/python
-
-# Python packages
-RUN pip --no-cache-dir install -U 'pip'
-RUN pip --no-cache-dir install 'cython'
-RUN pip --no-cache-dir install 'numpy'
-RUN pip --no-cache-dir install 'scipy'
-RUN pip --no-cache-dir install 'pandas'
-RUN pip --no-cache-dir install 'scikit-learn'
-RUN pip --no-cache-dir install 'matplotlib'
-RUN pip --no-cache-dir install 'seaborn'
-RUN pip --no-cache-dir install 'xgboost'
-RUN pip --no-cache-dir install 'jupyter'
-
-# Cleaning
-RUN pip uninstall --yes cython && \
-    rm /usr/include/xlocale.h && \
-    rm -rf /root/.cache && \
-    rm -rf /var/cache/apk/* && \
-    apk del .build-dependencies
+FROM petronetto/miniconda-alpine
 
 # Create nbuser user with UID=1000 and in the 'users' group
 RUN adduser -G users -u 1000 -s /bin/sh -D nbuser && \
@@ -80,19 +31,21 @@ RUN adduser -G users -u 1000 -s /bin/sh -D nbuser && \
     mkdir -p /home/nbuser/.ipython/profile_default/startup/ && \
     chown -Rf nbuser:users /home/nbuser
 
-# Run notebook without token
-RUN echo "c.NotebookApp.token = u''" >> /home/nbuser/.jupyter/jupyter_notebook_config.py
+RUN conda install -y scikit-learn pandas matplotlib seaborn jupyter
 
-# Copy the file to start the container
-COPY start.sh /start.sh
-RUN chmod a+x /start.sh
+# Run notebook without token and disable warnings
+RUN echo " \n\
+import warnings \n\
+warnings.filterwarnings('ignore') \n\
+c.NotebookApp.token = u''" >> /home/nbuser/.jupyter/jupyter_notebook_config.py
+
+RUN conda install -c conda-forge xgboost python=3.5 --yes && \
+    conda clean --yes --all
 
 EXPOSE 8888
 
-WORKDIR /home/nbuser/notebooks
-
 USER nbuser
 
-ENTRYPOINT ["/sbin/tini", "--"]
+WORKDIR /home/nbuser/notebooks
 
-CMD ["/start.sh"]
+CMD ["/opt/conda/bin/jupyter", "notebook", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--NotebookApp.token="]
