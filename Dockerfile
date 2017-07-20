@@ -52,15 +52,15 @@ RUN apk add --no-cache tini libstdc++ gcc freetype zlib jpeg libpng graphviz && 
 
 # Python packages
 RUN pip --no-cache-dir install -U 'pip'  && \
-    'cython' && \
-    'numpy' && \
-    'scipy' && \
-    'pandas' && \
-    'scikit-learn' && \
-    'matplotlib' && \
-    'seaborn' && \
-    'xgboost' && \
-    'jupyter'
+    pip --no-cache-dir install 'cython' && \
+    pip --no-cache-dir install 'numpy' && \
+    pip --no-cache-dir install 'scipy' && \
+    pip --no-cache-dir install 'pandas' && \
+    pip --no-cache-dir install 'scikit-learn' && \
+    pip --no-cache-dir install 'matplotlib' && \
+    pip --no-cache-dir install 'seaborn' && \
+    pip --no-cache-dir install 'xgboost' && \
+    pip --no-cache-dir install 'jupyter'
 
 # Cleaning
 RUN pip uninstall --yes cython && \
