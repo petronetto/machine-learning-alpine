@@ -51,16 +51,16 @@ RUN apk add --no-cache tini libstdc++ gcc freetype zlib jpeg libpng graphviz && 
     ln -s locale.h /usr/include/xlocale.h
 
 # Python packages
-RUN pip --no-cache-dir install -U 'pip'
-RUN pip --no-cache-dir install 'cython'
-RUN pip --no-cache-dir install 'numpy'
-RUN pip --no-cache-dir install 'scipy'
-RUN pip --no-cache-dir install 'pandas'
-RUN pip --no-cache-dir install 'scikit-learn'
-RUN pip --no-cache-dir install 'matplotlib'
-RUN pip --no-cache-dir install 'seaborn'
-RUN pip --no-cache-dir install 'xgboost'
-RUN pip --no-cache-dir install 'jupyter'
+RUN pip --no-cache-dir install -U 'pip'  && \
+    'cython' && \
+    'numpy' && \
+    'scipy' && \
+    'pandas' && \
+    'scikit-learn' && \
+    'matplotlib' && \
+    'seaborn' && \
+    'xgboost' && \
+    'jupyter'
 
 # Cleaning
 RUN pip uninstall --yes cython && \

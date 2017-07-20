@@ -18,31 +18,36 @@
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
+# SOFTWARE
 
-version: '3'
+FROM petronetto/miniconda-alpine
 
-services:
-  notebook:
-    container_name: notebook
-    image: petronetto/machine-learning-alpine
-    ports:
-      - 8888:8888
-    volumes:
-      - ./notebooks/:/home/nbuser/notebooks
-########################################################
-  # tensorflow:
-  #   container_name: tensorflow
-  #   image: petronetto/machine-learning-alpine:tensorflow
-  #   ports:
-  #     - 8888:8888
-  #   volumes:
-  #     - ./notebooks/:/home/nbuser/notebooks
-########################################################
-  # tensorflow-keras:
-  #   container_name: tensorflow-keras
-  #   image: petronetto/machine-learning-alpine:tensorflow-keras
-  #   ports:
-  #     - 8888:8888
-  #   volumes:
-  #     - ./notebooks/:/home/nbuser/notebooks
+MAINTAINER Juliano Petronetto <juliano.petronetto@gmail.com>
+
+# Create nbuser user with UID=1000 and in the 'users' group
+RUN adduser -G users -u 1000 -s /bin/sh -D nbuser && \
+    echo "nbuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
+    mkdir /home/nbuser/notebooks && \
+    mkdir /home/nbuser/.jupyter && \
+    mkdir /home/nbuser/.local && \
+    chown -Rf nbuser:users /home/nbuser
+
+RUN conda install -y scikit-learn pandas matplotlib seaborn jupyter
+
+# Run notebook without token and disable warnings
+RUN echo " \n\
+import warnings \n\
+warnings.filterwarnings('ignore') \n\
+c.NotebookApp.token = u''" >> /home/nbuser/.jupyter/jupyter_notebook_config.py
+
+RUN conda install -c conda-forge xgboost python=3.5 --yes && \
+    conda install -c conda-forge keras python=3.5 --yes && \
+    conda clean --yes --all
+
+EXPOSE 8888
+
+USER nbuser
+
+WORKDIR /home/nbuser/notebooks
+
+CMD ["/opt/conda/bin/jupyter", "notebook", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--NotebookApp.token="]
