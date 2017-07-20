@@ -16,10 +16,13 @@
 - XGBoost
 - Jupyter Notebook
 
-
 All in only ~200 MB :)
 
 
+Optional:
+- TensorFlow
+- Keras
+> This containers are more bigger than first one.
 
 ## Running the container
 - Clone this repository: `git clone git@github.com:Petronetto/machine-learning-alpine.git`
@@ -30,9 +33,13 @@ All in only ~200 MB :)
 
 See the `Welcome.ipynb` to see the package versions.
 
-### Enabling Warning Messages
-By default the Warning Messages are disabled, if you want to enable, simply umcomment 
-the `environment` section in `docker-compose.yml` file.
+## TensorFlow and Keras
+This project also has an TensorFlow and TensorFlow + Keras images, you can simple change the images in `docker-compose.yml`, there's available `tensorflow` and `tensorflow-keras`.
+
+Also you can run directly:
+`docker run -it -v $(pwd):/home/nbuser/notebooks -p 8888:8888 petronetto/machine-learning-alpine:tensorflow`
+or
+`docker run -it -v $(pwd):/home/nbuser/notebooks -p 8888:8888 petronetto/machine-learning-alpine:tensorflow-keras`
 
 Enjoy :)
 

@@ -18,31 +18,21 @@
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
+# SOFTWARE
 
-version: '3'
+FROM petronetto/machine-learning-alpine:tensorflow
 
-services:
-  notebook:
-    container_name: notebook
-    image: petronetto/machine-learning-alpine
-    ports:
-      - 8888:8888
-    volumes:
-      - ./notebooks/:/home/nbuser/notebooks
-########################################################
-  # tensorflow:
-  #   container_name: tensorflow
-  #   image: petronetto/machine-learning-alpine:tensorflow
-  #   ports:
-  #     - 8888:8888
-  #   volumes:
-  #     - ./notebooks/:/home/nbuser/notebooks
-########################################################
-  # tensorflow-keras:
-  #   container_name: tensorflow-keras
-  #   image: petronetto/machine-learning-alpine:tensorflow-keras
-  #   ports:
-  #     - 8888:8888
-  #   volumes:
-  #     - ./notebooks/:/home/nbuser/notebooks
+MAINTAINER Juliano Petronetto <juliano.petronetto@gmail.com>
+
+USER root
+
+RUN conda install -c conda-forge keras python=3.5 --yes && \
+    conda clean --yes --all
+
+EXPOSE 8888
+
+USER nbuser
+
+WORKDIR /home/nbuser/notebooks
+
+CMD ["/opt/conda/bin/jupyter", "notebook", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--NotebookApp.token="]
