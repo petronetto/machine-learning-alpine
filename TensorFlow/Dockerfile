@@ -24,30 +24,24 @@ FROM petronetto/miniconda-alpine
 
 MAINTAINER Juliano Petronetto <juliano.petronetto@gmail.com>
 
-# Create nbuser user with UID=1000 and in the 'users' group
-RUN adduser -G users -u 1000 -s /bin/sh -D nbuser && \
-    echo "nbuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
-    mkdir /home/nbuser/notebooks && \
-    mkdir /home/nbuser/.jupyter && \
-    mkdir /home/nbuser/.local && \
-    chown -Rf nbuser:users /home/nbuser
-
 RUN conda install -y scikit-learn pandas matplotlib seaborn jupyter
+
+RUN ln -s /opt/conda/bin/jupyter /usr/bin/jupyter
+RUN mkdir -p /home/root/.jupyter
 
 # Run notebook without token and disable warnings
 RUN echo " \n\
 import warnings \n\
 warnings.filterwarnings('ignore') \n\
-c.NotebookApp.token = u''" >> /home/nbuser/.jupyter/jupyter_notebook_config.py
+c.NotebookApp.token = u''" >> /home/root/.jupyter/config.py
 
 RUN conda install -c conda-forge xgboost python=3.5 --yes && \
-    conda install -c conda-forge keras python=3.5 --yes && \
+    conda install -c conda-forge tensorflow python=3.5 --yes && \
     conda clean --yes --all
 
 EXPOSE 8888
 
-USER nbuser
+RUN mkdir -p /home/root/.jupyter
+WORKDIR /home/root/notebooks
 
-WORKDIR /home/nbuser/notebooks
-
-CMD ["/opt/conda/bin/jupyter", "notebook", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--NotebookApp.token="]
+CMD ["jupyter", "notebook", "--port=8888", "--no-browser", "--allow-root", "--ip=0.0.0.0", "--NotebookApp.token="]
