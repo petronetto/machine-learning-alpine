@@ -41,7 +41,6 @@ RUN conda install -c conda-forge xgboost python=3.5 --yes && \
 
 EXPOSE 8888
 
-RUN mkdir -p /home/root/.jupyter
 WORKDIR /home/root/notebooks
 
 CMD ["jupyter", "notebook", "--port=8888", "--no-browser", "--allow-root", "--ip=0.0.0.0", "--NotebookApp.token="]

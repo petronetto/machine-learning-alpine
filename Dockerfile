@@ -67,19 +67,11 @@ RUN pip uninstall --yes cython && \
     rm /usr/include/xlocale.h && \
     rm -rf /root/.cache && \
     rm -rf /var/cache/apk/* && \
-    apk del .build-dependencies
-
-# Create nbuser user with UID=1000 and in the 'users' group
-RUN adduser -G users -u 1000 -s /bin/sh -D nbuser && \
-    echo "nbuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
-    mkdir /home/nbuser/notebooks && \
-    mkdir /home/nbuser/.jupyter && \
-    mkdir /home/nbuser/.local && \
-    mkdir -p /home/nbuser/.ipython/profile_default/startup/ && \
-    chown -Rf nbuser:users /home/nbuser
+    apk del .build-dependencies && \
+    mkdir -p /home/root/.jupyter
 
 # Run notebook without token
-RUN echo "c.NotebookApp.token = u''" >> /home/nbuser/.jupyter/jupyter_notebook_config.py
+RUN echo "c.NotebookApp.token = u''" >> /home/root/.jupyter/config.py
 
 # Copy the file to start the container
 COPY start.sh /start.sh
@@ -87,9 +79,7 @@ RUN chmod a+x /start.sh
 
 EXPOSE 8888
 
-WORKDIR /home/nbuser/notebooks
-
-USER nbuser
+WORKDIR /home/root/notebooks
 
 ENTRYPOINT ["/sbin/tini", "--"]
 
