@@ -24,15 +24,11 @@ FROM petronetto/machine-learning-alpine:tensorflow
 
 MAINTAINER Juliano Petronetto <juliano.petronetto@gmail.com>
 
-USER root
-
 RUN conda install -c conda-forge keras python=3.5 --yes && \
     conda clean --yes --all
 
 EXPOSE 8888
 
-USER nbuser
+WORKDIR /home/root/notebooks
 
-WORKDIR /home/nbuser/notebooks
-
-CMD ["/opt/conda/bin/jupyter", "notebook", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--NotebookApp.token="]
+CMD ["jupyter", "notebook", "--port=8888", "--allow-root", "--no-browser", "--ip=0.0.0.0", "--NotebookApp.token="]
