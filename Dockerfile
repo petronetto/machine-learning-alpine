@@ -70,12 +70,11 @@ RUN pip uninstall --yes cython && \
     apk del .build-dependencies && \
     mkdir -p /home/root/.jupyter
 
-# Run notebook without token
-RUN echo "c.NotebookApp.token = u''" >> /home/root/.jupyter/config.py
-
-# Copy the file to start the container
-COPY start.sh /start.sh
-RUN chmod a+x /start.sh
+# Run notebook without token and disable warnings
+RUN echo " \n\
+import warnings \n\
+warnings.filterwarnings('ignore') \n\
+c.NotebookApp.token = u''" >> /home/root/.jupyter/config.py
 
 EXPOSE 8888
 
@@ -83,4 +82,4 @@ WORKDIR /home/root/notebooks
 
 ENTRYPOINT ["/sbin/tini", "--"]
 
-CMD ["/start.sh"]
+CMD ["jupyter", "notebook", "--port=8888", "--no-browser", "--allow-root", "--ip=0.0.0.0", "--NotebookApp.token="]
