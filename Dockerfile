@@ -68,17 +68,17 @@ RUN pip uninstall --yes cython && \
     rm -rf /root/.cache && \
     rm -rf /var/cache/apk/* && \
     apk del .build-dependencies && \
-    mkdir -p /home/root/.jupyter
+    mkdir -p /root/.jupyter
 
 # Run notebook without token and disable warnings
 RUN echo " \n\
 import warnings \n\
 warnings.filterwarnings('ignore') \n\
-c.NotebookApp.token = u''" >> /home/root/.jupyter/config.py
+c.NotebookApp.token = u''" >> /root/.jupyter/config.py
 
 EXPOSE 8888
 
-WORKDIR /home/root/notebooks
+WORKDIR /notebooks
 
 ENTRYPOINT ["/sbin/tini", "--"]
 
