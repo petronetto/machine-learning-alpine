@@ -22,7 +22,14 @@
 
 FROM alpine:3.5
 
-MAINTAINER Juliano Petronetto <juliano.petronetto@gmail.com>
+LABEL maintainer="Juliano Petronetto <juliano@petronetto.com.br>"
+LABEL org.label-schema.name="Machine Learning Alpine" \
+      org.label-schema.description="Basic tools to work with machine learning in Python, using a small Alpine container" \
+      org.label-schema.url="https://hub.docker.com/r/petronetto/machine-learning-alpine" \
+      org.label-schema.vcs-url="https://github.com/petronetto/machine-learning-alpine" \
+      org.label-schema.vendor="Petronetto DevTech" \
+      org.label-schema.version="1.5" \
+      org.label-schema.schema-version="1.0"
 
 RUN echo "http://dl-2.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories; \
     echo "http://dl-3.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories; \
