@@ -20,6 +20,17 @@ All in only ~200 MB :)
 
 
 ## Running the container
+
+Simples run the command bellow and open your browser in `http://localhost:8888`.
+```sh
+docker run -it \
+           -v $(PWD):/notebooks \
+           -p 8888:8888 \
+           petronetto/machine-learning-alpine
+```
+
+Or
+
 - Clone this repository: `git clone git@github.com:Petronetto/machine-learning-alpine.git`
 
 - Enter in project folder: `cd machine-learning-alpine`
