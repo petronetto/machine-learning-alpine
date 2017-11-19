@@ -21,7 +21,7 @@ All in only ~200 MB :)
 
 ## Running the container
 
-Simples run the command bellow and open your browser in `http://localhost:8888`.
+Simply run the following command and open your browser in `http://localhost:8888`.
 ```sh
 docker run -it \
            -v $(PWD):/notebooks \
