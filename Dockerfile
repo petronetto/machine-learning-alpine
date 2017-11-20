@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-FROM alpine:3.5
+FROM alpine:3.6
 
 LABEL maintainer="Juliano Petronetto <juliano@petronetto.com.br>"
 LABEL org.label-schema.name="Machine Learning Alpine" \
@@ -31,57 +31,46 @@ LABEL org.label-schema.name="Machine Learning Alpine" \
       org.label-schema.version="1.5" \
       org.label-schema.schema-version="1.0"
 
-RUN echo "http://dl-2.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories; \
-    echo "http://dl-3.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories; \
-    echo "http://dl-4.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories; \
-    echo "http://dl-5.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
-
-# install ca-certificates so that HTTPS works consistently
-# the other runtime dependencies for Python are installed later
-RUN apk add --no-cache ca-certificates
-
-# Setup de basic requeriments
-RUN apk add --no-cache python3 && \
-    python3 -m ensurepip && \
-    rm -r /usr/lib/python*/ensurepip && \
-    pip3 --no-cache-dir install --upgrade pip setuptools
-
-# Dev dependencies and others stuffs...
-RUN apk add --no-cache tini libstdc++ gcc freetype zlib jpeg libpng graphviz && \
-    apk add --no-cache \
-        --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
-        lapack-dev && \
-    apk add --no-cache \
+RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/main | tee /etc/apk/repositories \
+    && echo http://dl-cdn.alpinelinux.org/alpine/edge/testing | tee -a /etc/apk/repositories \
+    && echo http://dl-cdn.alpinelinux.org/alpine/edge/community | tee -a /etc/apk/repositories \
+    && apk add --update --no-cache python3 \
+        tini libstdc++ gcc freetype zlib curl \
+        jpeg libpng graphviz lapack ca-certificates \
+## Setup de basic requeriments
+    && python3 -m ensurepip \
+    && rm -r /usr/lib/python*/ensurepip \
+    && pip3 --no-cache-dir install --upgrade pip setuptools \
+    && if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip; fi \
+    && if [[ ! -e /usr/bin/python ]]; then ln -sf /usr/bin/python3 /usr/bin/python; fi \
+## Dev dependencies and others stuffs...
+    && apk add --no-cache \
         --virtual=.build-dependencies \
-        g++ gfortran musl-dev pkgconfig freetype-dev jpeg-dev zlib-dev libpng-dev make \
-        python3-dev libc-dev && \
-    ln -s locale.h /usr/include/xlocale.h
-
-# Python packages
-RUN pip --no-cache-dir install -U 'pip'  && \
-    pip --no-cache-dir install 'cython' && \
-    pip --no-cache-dir install 'numpy' && \
-    pip --no-cache-dir install 'scipy' && \
-    pip --no-cache-dir install 'pandas' && \
-    pip --no-cache-dir install 'scikit-learn' && \
-    pip --no-cache-dir install 'matplotlib' && \
-    pip --no-cache-dir install 'seaborn' && \
-    pip --no-cache-dir install 'xgboost' && \
-    pip --no-cache-dir install 'jupyter'
-
-# Cleaning
-RUN pip uninstall --yes cython && \
-    rm /usr/include/xlocale.h && \
-    rm -rf /root/.cache && \
-    rm -rf /var/cache/apk/* && \
-    apk del .build-dependencies && \
-    mkdir -p /root/.jupyter
-
-# Run notebook without token and disable warnings
-RUN echo " \n\
-import warnings \n\
-warnings.filterwarnings('ignore') \n\
-c.NotebookApp.token = u''" >> /root/.jupyter/config.py
+        g++ gfortran build-base musl-dev pkgconfig freetype-dev jpeg-dev \
+        openblas-dev zlib-dev libpng-dev make python3-dev linux-headers \
+        libc-dev cython-dev gfortran wget \
+    && ln -s locale.h /usr/include/xlocale.h \
+## Python packages
+    && pip install --no-cache-dir -U numpy \
+    && pip install --no-cache-dir -U scipy \
+    && pip install --no-cache-dir -U pandas \
+    && pip install --no-cache-dir -U scikit-learn \
+    && pip install --no-cache-dir -U matplotlib \
+    && pip install --no-cache-dir -U seaborn \
+    && pip install --no-cache-dir -U xgboost \
+    && pip install --no-cache-dir -U jupyter \
+## Cleaning
+    && rm /usr/include/xlocale.h \
+    && rm -rf /root/.cache \
+    && rm -rf /var/cache/apk/* \
+    && apk del .build-dependencies \
+    && find /usr/lib/python3.6 -name __pycache__ | xargs rm -r \
+    && rm -rf /root/.[acpw]* \
+## Run notebook without token and disable warnings
+    && mkdir -p /root/.jupyter \
+    && echo "import warnings" >> /root/.jupyter/config.py \
+    && echo "warnings.filterwarnings('ignore')" >> /root/.jupyter/config.py \
+    && echo "c.NotebookApp.token = u''" >> /root/.jupyter/config.py
 
 EXPOSE 8888
 

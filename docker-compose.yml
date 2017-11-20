@@ -30,19 +30,3 @@ services:
       - 8888:8888
     volumes:
       - ./notebooks/:/notebooks
-########################################################
-  # tensorflow:
-  #   container_name: tensorflow
-  #   image: petronetto/machine-learning-alpine:tensorflow
-  #   ports:
-  #     - 8888:8888
-  #   volumes:
-  #     - ./notebooks/:/home/nbuser/notebooks
-########################################################
-  # tensorflow-keras:
-  #   container_name: tensorflow-keras
-  #   image: petronetto/machine-learning-alpine:tensorflow-keras
-  #   ports:
-  #     - 8888:8888
-  #   volumes:
-  #     - ./notebooks/:/home/nbuser/notebooks
