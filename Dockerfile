@@ -35,7 +35,7 @@ RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/main | tee /etc/apk/repositor
     && echo http://dl-cdn.alpinelinux.org/alpine/edge/testing | tee -a /etc/apk/repositories \
     && echo http://dl-cdn.alpinelinux.org/alpine/edge/community | tee -a /etc/apk/repositories \
     && apk add --update --no-cache python3 \
-        tini libstdc++ gcc freetype zlib curl \
+        tini libstdc++ gcc freetype zlib curl openblas \
         jpeg libpng graphviz lapack ca-certificates \
 ## Setup de basic requeriments
     && python3 -m ensurepip \
