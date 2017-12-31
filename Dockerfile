@@ -38,59 +38,39 @@ LABEL maintainer="Juliano Petronetto <juliano@petronetto.com.br>" \
       vendor="Petronetto DevTech" \
       version="1.0"
 
-RUN echo "http://dl-2.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories; \
-    echo "http://dl-3.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories; \
-    echo "http://dl-4.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories; \
-    echo "http://dl-5.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
-
-# install ca-certificates so that HTTPS works consistently
-# the other runtime dependencies for Python are installed later
-RUN apk add --no-cache ca-certificates
-
-# Setup de basic requeriments
-RUN apk add --no-cache python3 && \
-    python3 -m ensurepip && \
-    rm -r /usr/lib/python*/ensurepip && \
-    pip3 --no-cache-dir install --upgrade pip setuptools
-
-# Dev dependencies and others stuffs...
-RUN apk add --no-cache tini libstdc++ gcc freetype \
-        zlib jpeg libpng graphviz font-noto && \
-    apk add --no-cache \
-        --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
-        lapack-dev && \
-    apk add --no-cache \
-        --virtual=.build-dependencies \
-        g++ gfortran musl-dev pkgconfig freetype-dev \
-        jpeg-dev zlib-dev libpng-dev make \
-        python3-dev libc-dev && \
-    ln -s locale.h /usr/include/xlocale.h
-
-# Python packages
-RUN pip --no-cache-dir install -U 'pip'  && \
-    pip --no-cache-dir install 'cython' && \
-    pip --no-cache-dir install 'numpy' && \
-    pip --no-cache-dir install 'scipy' && \
-    pip --no-cache-dir install 'pandas' && \
-    pip --no-cache-dir install 'scikit-learn' && \
-    pip --no-cache-dir install 'matplotlib' && \
-    pip --no-cache-dir install 'seaborn' && \
-    pip --no-cache-dir install 'xgboost' && \
-    pip --no-cache-dir install 'jupyter'
-
-# Cleaning
-RUN pip uninstall --yes cython && \
-    rm /usr/include/xlocale.h && \
-    rm -rf /root/.cache && \
-    rm -rf /var/cache/apk/* && \
-    apk del .build-dependencies && \
-    mkdir -p /root/.jupyter
-
-# Run notebook without token and disable warnings
-RUN echo " \n\
-import warnings \n\
-warnings.filterwarnings('ignore') \n\
-c.NotebookApp.token = u''" >> /root/.jupyter/config.py
+RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/main | tee /etc/apk/repositories \
+    && echo http://dl-cdn.alpinelinux.org/alpine/edge/testing | tee -a /etc/apk/repositories \
+    && echo http://dl-cdn.alpinelinux.org/alpine/edge/community | tee -a /etc/apk/repositories \
+    && apk add -U --no-cache tini bash \
+        curl ca-certificates python3 freetype jpeg \
+        graphviz font-noto libpng libstdc++ libgomp \
+## Setup de basic requeriments
+    && python3 -m ensurepip \
+    && rm -r /usr/lib/python*/ensurepip \
+    && pip3 --no-cache-dir install --upgrade pip setuptools wheel \
+    && if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip; fi \
+    && if [[ ! -e /usr/bin/python ]]; then ln -sf /usr/bin/python3 /usr/bin/python; fi \
+    && ln -s locale.h /usr/include/xlocale.h \
+## Dev dependencies and others stuffs...
+    && apk add -U --no-cache --virtual=.build-deps \
+        build-base linux-headers python3-dev gfortran git cmake jpeg-dev \
+        cython-dev libffi-dev openblas-dev freetype-dev libpng-dev \
+    && pip install -U --no-cache-dir requests pillow \
+        numpy scipy scikit-learn pandas matplotlib xgboost \
+        ipywidgets notebook seaborn \
+    && jupyter nbextension enable --py widgetsnbextension \
+## Cleaning
+    && rm /usr/include/xlocale.h \
+    && rm -rf /root/.cache \
+    && rm -rf /var/cache/apk/* \
+    && apk del .build-deps \
+    && find /usr/lib/python3.6 -name __pycache__ | xargs rm -r \
+    && rm -rf /root/.[acpw]* \
+## Run notebook without token and disable warnings
+    && mkdir -p ~/.ipython/profile_default/startup/ \
+    && echo "import warnings" >> ~/.ipython/profile_default/startup/config.py \
+    && echo "warnings.filterwarnings('ignore')" >> ~/.ipython/profile_default/startup/config.py \
+    && echo "c.NotebookApp.token = u''" >> ~/.ipython/profile_default/startup/config.py
 
 EXPOSE 8888
 
@@ -98,4 +78,5 @@ WORKDIR /notebooks
 
 ENTRYPOINT ["/sbin/tini", "--"]
 
-CMD ["jupyter", "notebook", "--port=8888", "--no-browser", "--allow-root", "--ip=0.0.0.0", "--NotebookApp.token="]
+CMD ["jupyter", "notebook", "--port=8888", "--no-browser", \
+    "--allow-root", "--ip=0.0.0.0", "--NotebookApp.token="]
