@@ -1,0 +1,36 @@
+version: 2
+jobs:
+  build:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: Docker Login
+          command: docker login -u $DOCKER_HUB_USER_ID -p $DOCKER_HUB_PWD
+      - run:
+          name: Docker Build
+          command: |
+            docker build -t petronetto/machine-learning-alpine .
+      - run:
+          name: Docker Images
+          command: |
+            docker images
+      - run:
+          name: Push the develop tag
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "develop" ]; then
+              docker tag petronetto/machine-learning-alpine petronetto/machine-learning-alpine:develop
+              docker push petronetto/machine-learning-alpine:develop
+            fi
+      - run:
+          name: Push the latest tag
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              docker tag petronetto/machine-learning-alpine petronetto/machine-learning-alpine:latest
+              docker push petronetto/machine-learning-alpine:latest
+            fi
+      - run:
+          name: Backup tag
+          command: |
+            docker tag petronetto/machine-learning-alpine petronetto/machine-learning-alpine:v-$CIRCLE_BUILD_NUM
+            docker push petronetto/machine-learning-alpine:v-$CIRCLE_BUILD_NUM
