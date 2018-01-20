@@ -13,6 +13,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/petronetto/machine-learning-alpine.svg)](https://github.com/petronetto/machine-learning-alpine/issues)
 [![GitHub license](https://img.shields.io/github/license/petronetto/machine-learning-alpine.svg)](https://raw.githubusercontent.com/petronetto/machine-learning-alpine/master/LICENSE)
 [![Twitter](https://img.shields.io/twitter/url/https/github.com/petronetto/machine-learning-alpine.svg?style=social)](https://twitter.com/intent/tweet?text=Wow:&url=https%3A%2F%2Fgithub.com%2Fpetronetto%2Fmachine-learning-alpine)
+[![CircleCI](https://circleci.com/gh/petronetto/machine-learning-alpine/tree/master.svg?style=svg)](https://circleci.com/gh/petronetto/machine-learning-alpine/tree/master)
 
 ## What is include
 - Python 3.6
