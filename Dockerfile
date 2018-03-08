@@ -32,7 +32,7 @@ FROM alpine:3.7
 
 LABEL maintainer="Juliano Petronetto <juliano@petronetto.com.br>" \
       name="Machine Learning Alpine" \
-      description="Almosto anything that you need for machine learning in a small container." \
+      description="Almost anything that you need for machine learning in a small container." \
       url="https://hub.docker.com/r/petronetto/machine-learning-alpine" \
       vcs-url="https://github.com/petronetto/machine-learning-alpine" \
       vendor="Petronetto DevTech" \
