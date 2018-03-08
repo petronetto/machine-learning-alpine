@@ -32,46 +32,56 @@ FROM alpine:3.7
 
 LABEL maintainer="Juliano Petronetto <juliano@petronetto.com.br>" \
       name="Machine Learning Alpine" \
-      description="Almost everything that you need for machine learning in a small container." \
+      description="Almost anything that you need for machine learning in a small container." \
       url="https://hub.docker.com/r/petronetto/machine-learning-alpine" \
       vcs-url="https://github.com/petronetto/machine-learning-alpine" \
       vendor="Petronetto DevTech" \
       version="1.0"
 
-RUN apk update && apk upgrade \
-    && echo http://dl-cdn.alpinelinux.org/alpine/edge/main | tee /etc/apk/repositories \
-    && echo http://dl-cdn.alpinelinux.org/alpine/edge/testing | tee -a /etc/apk/repositories \
-    && echo http://dl-cdn.alpinelinux.org/alpine/edge/community | tee -a /etc/apk/repositories \
-    && apk add -U --no-cache tini bash \
-        curl ca-certificates python3 freetype jpeg \
-        graphviz font-noto libpng libstdc++ libgomp \
-    && python3 -m ensurepip \
-    && rm -r /usr/lib/python*/ensurepip \
-    && pip3 --no-cache-dir install --upgrade pip setuptools wheel \
-    && if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip; fi \
-    && if [[ ! -e /usr/bin/python ]]; then ln -sf /usr/bin/python3 /usr/bin/python; fi \
-    && ln -s locale.h /usr/include/xlocale.h \
-    && apk add -U --no-cache --virtual=.build-deps \
-        build-base linux-headers python3-dev gfortran git cmake jpeg-dev \
-        cython-dev libffi-dev openblas-dev freetype-dev libpng-dev \
-    && pip install -U --no-cache-dir requests pillow \
-        numpy scipy scikit-learn pandas matplotlib xgboost \
-        ipywidgets notebook seaborn \
-    && jupyter nbextension enable --py widgetsnbextension \
-    && rm /usr/include/xlocale.h \
-    && rm -rf /root/.cache \
-    && rm -rf /var/cache/apk/* \
-    && apk del .build-deps \
-    && find /usr/lib/python3.6 -name __pycache__ | xargs rm -r \
-    && rm -rf /root/.[acpw]* \
-    && mkdir -p ~/.ipython/profile_default/startup/ \
-    && echo "import warnings" >> ~/.ipython/profile_default/startup/config.py \
-    && echo "warnings.filterwarnings('ignore')" >> ~/.ipython/profile_default/startup/config.py \
-    && echo "c.NotebookApp.token = u''" >> ~/.ipython/profile_default/startup/config.py
+ENV MAIN_PKGS="\
+        tini curl ca-certificates python3 py3-numpy \
+        py3-numpy-f2py freetype jpeg libpng libstdc++ \
+        libgomp graphviz font-noto openssl" \
+    BUILD_PKGS="\
+        build-base linux-headers python3-dev git \
+        cmake jpeg-dev libffi-dev gfortran openblas-dev \
+        py-numpy-dev freetype-dev libpng-dev libexecinfo-dev" \
+    PIP_PKGS="\
+        pyyaml pymkl cffi scikit-learn matplotlib \
+        ipywidgets notebook requests pillow \
+        graphviz pandas seaborn xgboost" \
+    CONF_DIR="~/.ipython/profile_default/startup"
 
-EXPOSE 8888
+RUN set -ex; \
+    apk update; \
+    apk upgrade; \
+    echo http://dl-cdn.alpinelinux.org/alpine/edge/main | tee /etc/apk/repositories; \
+    echo http://dl-cdn.alpinelinux.org/alpine/edge/testing | tee -a /etc/apk/repositories; \
+    echo http://dl-cdn.alpinelinux.org/alpine/edge/community | tee -a /etc/apk/repositories; \
+    apk add --no-cache ${MAIN_PKGS}; \
+    python3 -m ensurepip; \
+    rm -r /usr/lib/python*/ensurepip; \
+    pip3 --no-cache-dir install --upgrade pip setuptools wheel; \
+    if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip; fi; \
+    if [[ ! -e /usr/bin/python ]]; then ln -sf /usr/bin/python3 /usr/bin/python; fi; \
+    ln -s locale.h /usr/include/xlocale.h; \
+    apk add --no-cache --virtual=.build-deps ${BUILD_PKGS}; \
+    pip install -U --no-cache-dir ${PIP_PKGS}; \
+    apk del .build-deps; \
+    rm /usr/include/xlocale.h; \
+    rm -rf /root/.cache; \
+    rm -rf /root/.[acpw]*; \
+    rm -rf /var/cache/apk/*; \
+    find /usr/lib/python3.6 -name __pycache__ | xargs rm -r; \
+    jupyter nbextension enable --py widgetsnbextension; \
+    mkdir -p ${CONF_DIR}/; \
+    echo "import warnings" | tee ${CONF_DIR}/config.py; \
+    echo "warnings.filterwarnings('ignore')" | tee -a ${CONF_DIR}/config.py; \
+    echo "c.NotebookApp.token = u''" | tee -a ${CONF_DIR}/config.py
 
 WORKDIR /notebooks
+
+EXPOSE 8888
 
 ENTRYPOINT ["/sbin/tini", "--"]
 
