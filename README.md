@@ -8,7 +8,7 @@
  |_|  |_|\__,_|\___|_| |_|_|_| |_|\___| |_____\___|\__,_|_|  |_| |_|_|_| |_|\__, |
                                                                             |___/
 ```
-[![nodesource/node](http://dockeri.co/image/petronetto/machine-learning-alpiner)](https://registry.hub.docker.com/u/petronetto/machine-learning-alpine/)
+[![nodesource/node](http://dockeri.co/image/petronetto/machine-learning-alpine)](https://registry.hub.docker.com/u/petronetto/machine-learning-alpine/)
 
 [![](https://images.microbadger.com/badges/image/petronetto/machine-learning-alpine.svg)](https://microbadger.com/images/petronetto/machine-learning-alpine "Get your own image badge on microbadger.com")
 [![GitHub issues](https://img.shields.io/github/issues/petronetto/machine-learning-alpine.svg)](https://github.com/petronetto/machine-learning-alpine/issues)
