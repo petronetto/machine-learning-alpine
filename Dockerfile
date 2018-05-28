@@ -43,13 +43,13 @@ ENV MAIN_PKGS="\
         py3-numpy-f2py freetype jpeg libpng libstdc++ \
         libgomp graphviz font-noto openssl" \
     BUILD_PKGS="\
-        build-base linux-headers python3-dev git \
+        build-base linux-headers python3-dev cython-dev py-setuptools git \
         cmake jpeg-dev libffi-dev gfortran openblas-dev \
         py-numpy-dev freetype-dev libpng-dev libexecinfo-dev" \
     PIP_PKGS="\
-        pyyaml pymkl cffi scikit-learn matplotlib \
-        ipywidgets notebook requests pillow \
-        graphviz pandas seaborn xgboost" \
+        pyyaml pymkl cffi scikit-learn pandas \
+        matplotlib ipywidgets notebook requests \
+        pillow graphviz seaborn" \
     CONF_DIR="~/.ipython/profile_default/startup"
 
 RUN set -ex; \
@@ -62,11 +62,18 @@ RUN set -ex; \
     python3 -m ensurepip; \
     rm -r /usr/lib/python*/ensurepip; \
     pip3 --no-cache-dir install --upgrade pip setuptools wheel; \
-    if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip; fi; \
-    if [[ ! -e /usr/bin/python ]]; then ln -sf /usr/bin/python3 /usr/bin/python; fi; \
-    ln -s locale.h /usr/include/xlocale.h; \
     apk add --no-cache --virtual=.build-deps ${BUILD_PKGS}; \
     pip install -U --no-cache-dir ${PIP_PKGS}; \
+    ln -sf pip3 /usr/bin/pip; \
+    ln -sf /usr/bin/python3 /usr/bin/python; \
+    ln -s locale.h /usr/include/xlocale.h; \
+    mkdir /opt && cd /opt; \
+    git clone --recursive https://github.com/dmlc/xgboost; \
+    sed -i '/#define DMLC_LOG_STACK_TRACE 1/d' /opt/xgboost/dmlc-core/include/dmlc/base.h; \
+    sed -i '/#define DMLC_LOG_STACK_TRACE 1/d' /opt/xgboost/rabit/include/dmlc/base.h; \
+    cd /opt/xgboost; make -j4; \
+    cd /opt/xgboost/python-package; \
+    python setup.py install; \
     apk del .build-deps; \
     rm /usr/include/xlocale.h; \
     rm -rf /root/.cache; \
